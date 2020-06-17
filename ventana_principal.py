@@ -106,9 +106,6 @@ class Ventana_Principal():
         self.lbCodigoED.place(x=60, y=25)
         self.txtCodigoED.place(x=10, y=50)
 
-
-
-
     def widgets_producto(self):
         self.nuevo_producto = Toplevel()
         self.nuevo_producto.title('Nuevo producto')
@@ -159,7 +156,6 @@ class Ventana_Principal():
         self.BtnGuardar = Button(self.nuevo_producto, text='Guardar', command= lambda : self.crear_o_editar_producto(1))
         self.BtnGuardar.place(x=110, y=360)
 
-
     def crear_o_editar_producto(self, op):
         producto = Producto()
 
@@ -175,12 +171,16 @@ class Ventana_Principal():
                 if producto.guardar():
                     self.listar_productos()
                     self.nuevo_producto.destroy()
-            else:
-                print('Actualizar')
+            elif op==2:
+                
+                print('OPCION |1')
+                if producto.actualizar():
+                    self.nuevo_producto.destroy()
+                    self.listar_productos()
+
             
         else:
             self.lbError['text'] = 'Datos erroneos'
-
 
     def actualizar_producto(self):
         producto = Producto()
@@ -216,7 +216,6 @@ class Ventana_Principal():
     def inactivar_producto(self):
         pass
 
-
     def listar_productos(self):
         registros = self.listdetalle.get_children()
         for items in registros:
@@ -230,8 +229,7 @@ class Ventana_Principal():
              self.listdetalle.insert('', 0, text = element[0], values = (element[1],
                                                                          element[3],
                                                                          element[4],
-                                                                        
-                                                                         )
+                                                                        )
                                      )
         
 

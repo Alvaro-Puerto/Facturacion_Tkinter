@@ -44,7 +44,7 @@ class Ventana_Principal():
         self.Btneditar.image = imagenes['editar']
         self.Btneditar.place(x=90, y=5)
 
-        self.Btninactivar = Button(self.labelframe_superior, image=imagenes['eliminar'])
+        self.Btninactivar = Button(self.labelframe_superior, image=imagenes['eliminar'], command=self.inactivar_producto)
         self.Btninactivar.image = imagenes['eliminar']
         self.Btninactivar.place(x=170, y=5)
 
@@ -209,19 +209,22 @@ class Ventana_Principal():
                 
                 self.BtnGuardar['command']=lambda: self.crear_o_editar_producto(2)
                 
-
-
-            
-
     def inactivar_producto(self):
-        pass
+
+        id = self.listdetalle.focus()
+        elementos = self.listdetalle.item(id)
+        producto = Producto()
+        producto.id = elementos['text']
+        producto.estado = False
+
+        if producto.inactivar():
+            self.listar_productos()
 
     def listar_productos(self):
         registros = self.listdetalle.get_children()
         for items in registros:
             self.listdetalle.delete(items)
 
-        
         consulta = 'SELECT * FROM producto WHERE estado=1'
         productos_qs = conexion_consulta(consulta, parametros=())
 

@@ -2,7 +2,7 @@ import sqlite3
 
 
 def solo_numero(char):
-    return char in '12345678.'
+    return char in '1234567890.'
 
 
 def conexion_consulta(consulta, parametros=()):

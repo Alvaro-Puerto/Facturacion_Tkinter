@@ -11,6 +11,12 @@ class Producto():
         self.stock = None
         self.estado = None
 
+    def seleccionar(self):
+        consulta = 'SELECT * FROM producto WHERE id=?'
+        parametros = [self.id]
+        return conexion_consulta(consulta, parametros)
+
+
     def guardar(self):
         consulta = 'INSERT INTO producto VALUES(?, ?, ?, ?, ?, ?)'
         parametros = [(parametro[1]) for parametro in self.__dict__.items()]
@@ -19,6 +25,7 @@ class Producto():
 
     def actualizar(self):
         pass
+
 
     def inactivar(self):
         pass 

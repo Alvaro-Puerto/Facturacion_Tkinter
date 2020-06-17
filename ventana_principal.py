@@ -48,18 +48,30 @@ class Ventana_Principal():
         self.Btninactivar.image = imagenes['eliminar']
         self.Btninactivar.place(x=170, y=5)
 
-        self.BtnReportes = Button(self.labelframe_superior, image=imagenes['reportes'])
+        self.BtnReportes = Button(self.labelframe_superior, image=imagenes['reportes'], command=self.listar_productos)
         self.BtnReportes.image = imagenes['reportes']
         self.BtnReportes.place(x=250, y=5)
 
     def buscar(self):
         self.labelframe_buscador =LabelFrame(self.master, width=800, height=50)
         self.txtBuscar = Entry(self.labelframe_buscador, width=80)
-        self.btnBuscar = Button(self.labelframe_buscador, text='Buscar')
+        self.btnBuscar = Button(self.labelframe_buscador, text='Buscar', command=self.buscar_productos)
 
         self.labelframe_buscador.place(x=2, y=110)
         self.txtBuscar.place(x=5, y=10)
         self.btnBuscar.place(x=670, y=7)
+
+    def buscar_productos(self):
+        
+        varia = str(self.txtBuscar.get())
+        consulta = "SELECT * FROM producto WHERE nombre LIKE '%' || ? ||'%'"
+        parametros = [varia]
+
+        producto_qs = conexion_consulta(consulta, parametros)
+        
+        if producto_qs:
+            p = producto_qs
+            self.llenar_registros(p)
 
     def ventana_productos(self):
         self.labelproductos = LabelFrame(self.master, width=800, height=400,
@@ -221,19 +233,24 @@ class Ventana_Principal():
             self.listar_productos()
 
     def listar_productos(self):
+        consulta = 'SELECT * FROM producto WHERE estado=1'
+        productos_qs = conexion_consulta(consulta, parametros=())
+        p = productos_qs
+        self.llenar_registros(p)
+        
+    def llenar_registros(self, p):
         registros = self.listdetalle.get_children()
+        p = p
         for items in registros:
             self.listdetalle.delete(items)
 
-        consulta = 'SELECT * FROM producto WHERE estado=1'
-        productos_qs = conexion_consulta(consulta, parametros=())
-
-        for element in productos_qs:
+        for element in p:
              self.listdetalle.insert('', 0, text = element[0], values = (element[1],
                                                                          element[3],
                                                                          element[4],
                                                                         )
                                      )
+
         
 
         

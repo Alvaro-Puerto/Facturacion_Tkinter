@@ -98,9 +98,37 @@ class Ventana_Principal():
         
     def menu_inferior(self):
         self.label_inferior = LabelFrame(self.master, text='Opciones de facturacion',
-            width=800, height=100
+            width=800, height=110
         )
         self.label_inferior.place(x=3, y=580)
+
+        images_inferior = {
+            'new' : PhotoImage(file='imagenes/003-new-window.png'),
+            'block' : PhotoImage(file='imagenes/002-padlock.png'),
+            'cancelar' : PhotoImage(file='imagenes/004-forbidden.png')
+        }
+
+        self.BtnNuevo = Button(self.label_inferior,
+            text='Nueva venta', image = images_inferior['new'],  compound=LEFT
+    
+            
+        )
+        self.BtnNuevo.image=images_inferior['new']
+
+        self.BtnCancelar = Button(self.label_inferior, text='Cancelar',
+            image=images_inferior['cancelar'],  compound=LEFT
+        
+        )
+        self.BtnCancelar.image = images_inferior['cancelar']
+        self.BtnBloquear = Button(self.label_inferior, text='Bloquear sistema',
+            image=images_inferior['block'], compound=LEFT
+        )
+        self.BtnBloquear.images = images_inferior['block']
+        
+        self.BtnNuevo.place(x=3, y=2)
+        self.BtnBloquear.place(x=200, y=2)
+        self.BtnCancelar.place(x=430, y=2)
+
 
     def widget_buscar(self):
         self.VtBuscar = Toplevel()

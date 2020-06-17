@@ -15,7 +15,7 @@ class Ventana_Principal():
         self.menu()                         #Invoca los metodos para 
         self.buscar()                       #crear los widget de cada
         self.ventana_productos()            #Seccion
-
+        self.menu_inferior()
         self.listar_productos()
 
 
@@ -84,7 +84,12 @@ class Ventana_Principal():
         
         self.listdetalle.place(x = 3, y = 20)
         
-   
+    def menu_inferior(self):
+        self.label_inferior = LabelFrame(self.master, text='Opciones de facturacion',
+            width=800, height=100
+        )
+        self.label_inferior.place(x=3, y=580)
+        
     def widgets_producto(self):
         self.nuevo_producto = Toplevel()
         self.nuevo_producto.title('Nuevo producto')

@@ -24,7 +24,14 @@ class Producto():
         return conexion_consulta(consulta, parametros)
 
     def actualizar(self):
-        pass
+        consulta = '''UPDATE producto set id=?, nombre=?, precio_compra=?,
+                    precio_venta=?, inventario=?, estado=? WHERE id=?
+                    '''
+        parametros = [(parametro[1]) for parametro in self.__dict__.items()]
+        parametros.append(self.id)
+        print(parametros)
+
+        return conexion_consulta(consulta, parametros)
 
 
     def inactivar(self):

@@ -35,7 +35,9 @@ class Producto():
 
 
     def inactivar(self):
-        pass 
+        consulta = 'UPDATE producto set estado=? WHERE id=?'
+        parametros = [self.estado, self.id]
+        return conexion_consulta(consulta, parametros)
 
     def eliminar(self):
         pass

@@ -40,7 +40,7 @@ class Ventana_Principal():
         self.Btnproducto.image = imagenes['nuevo']
         self.Btnproducto.place(x=10, y=5)
 
-        self.Btneditar = Button(self.labelframe_superior, image=imagenes['editar'])
+        self.Btneditar = Button(self.labelframe_superior, image=imagenes['editar'], command=self.widget_buscar)
         self.Btneditar.image = imagenes['editar']
         self.Btneditar.place(x=90, y=5)
 
@@ -89,7 +89,26 @@ class Ventana_Principal():
             width=800, height=100
         )
         self.label_inferior.place(x=3, y=580)
-        
+
+    def widget_buscar(self):
+        self.VtBuscar = Toplevel()
+        self.VtBuscar.geometry('270x200')
+        self.VtBuscar.title('Editar u Eliminar')
+        self.VtBuscar.grab_set()
+        self.VtBuscar.transient(master=self.master)
+
+        self.lbCodigoED = Label(self.VtBuscar, text='Codigo del producto')
+        self.txtCodigoED = Entry(self.VtBuscar, width=30)
+
+        self.btnED = Button(self.VtBuscar, text='Buscar', command=self.actualizar_producto)
+        self.btnED.place(x=90, y=100)
+
+        self.lbCodigoED.place(x=60, y=25)
+        self.txtCodigoED.place(x=10, y=50)
+
+
+
+
     def widgets_producto(self):
         self.nuevo_producto = Toplevel()
         self.nuevo_producto.title('Nuevo producto')
@@ -137,11 +156,11 @@ class Ventana_Principal():
 
         #Botones 
 
-        self.BtnGuardar = Button(self.nuevo_producto, text='Guardar', command=self.crear_producto)
+        self.BtnGuardar = Button(self.nuevo_producto, text='Guardar', command= lambda : self.crear_o_editar_producto(1))
         self.BtnGuardar.place(x=110, y=360)
 
 
-    def crear_producto(self):
+    def crear_o_editar_producto(self, op):
         producto = Producto()
 
         producto.id = self.txtCodigo.get()
@@ -152,16 +171,47 @@ class Ventana_Principal():
         producto.estado = self.valor.get()
 
         if producto.validar():
-            if producto.guardar():
-                self.listar_productos()
-                self.nuevo_producto.destroy()
+            if op == 1:
+                if producto.guardar():
+                    self.listar_productos()
+                    self.nuevo_producto.destroy()
+            else:
+                print('Actualizar')
             
         else:
             self.lbError['text'] = 'Datos erroneos'
 
 
     def actualizar_producto(self):
-        pass
+        producto = Producto()
+        producto.id = self.txtCodigoED.get()
+
+        producto_editar = producto.seleccionar()
+
+        if producto_editar:
+            self.VtBuscar.destroy()
+
+            for producto_edit in producto_editar:
+
+                self.widgets_producto()
+                self.nuevo_producto.title('Editar producto')
+                self.txtCodigo.insert(0,producto_edit[0])
+                self.txtNombre.insert(0,producto_edit[1])
+                self.txtPrecio_compra['validate']='none'
+                self.txtPrecio_venta['validate']='none'
+
+                self.txtPrecio_compra.insert(END,float(producto_edit[2]) )
+                self.txtPrecio_compra['validate']='key'
+                self.txtPrecio_venta.insert(END,float(producto_edit[3]) )
+                self.txtPrecio_compra['validate']='key'
+                self.txtStock.insert(0,(producto_edit[4]))
+                self.valor.set(producto_edit[5])
+                
+                self.BtnGuardar['command']=lambda: self.crear_o_editar_producto(2)
+                
+
+
+            
 
     def inactivar_producto(self):
         pass

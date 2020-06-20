@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter.ttk import Treeview
+from tkinter.ttk import Treeview, Combobox
 
 
 from modelos import Producto
@@ -17,7 +17,7 @@ class Ventana_Principal():
         self.ventana_productos()            #Seccion
         self.menu_inferior()
         self.listar_productos()
-
+        self.widget_facturacion()
 
         self.validatecommand = self.master.register(solo_numero)
         
@@ -195,6 +195,75 @@ class Ventana_Principal():
 
         self.BtnGuardar = Button(self.nuevo_producto, text='Guardar', command= lambda : self.crear_o_editar_producto(1))
         self.BtnGuardar.place(x=110, y=360)
+
+    def widget_facturacion(self):
+        self.label_facturacion = LabelFrame(self.master, text='Facturacion', width=480, height=687)
+        self.label_facturacion.place(x=810, y=1)
+
+        self.titulo_fact = Label(self.label_facturacion, text='Facturacion de productos ')
+        self.titulo_fact.place(x=140, y=20)
+
+        self.lb_cod_factura = Label(self.label_facturacion, text='Codigo de factura :'
+        )
+        self.lb_cod_factura.place(x=10, y=60)
+
+        self.txt_cod_factura = Entry(self.label_facturacion, state='readonly')
+        self.txt_cod_factura.place(x=10, y=80)
+
+        self.lb_num_venta = Label(self.label_facturacion, text='# Venta :')
+        self.txt_num_venta = Entry(self.label_facturacion, state='readonly')
+        self.lb_num_venta.place(x=220, y=60)
+        self.txt_num_venta.place(x=220, y=80)
+
+        self.lb_cliente = Label(self.label_facturacion, text='Cliente :')
+        self.lb_cliente.place(x=10, y=110)
+        self.cliente = Combobox(self.label_facturacion, state='readonly', width=45)
+        self.cliente.place(x=10, y=130)
+
+        self.detalle_factura = Treeview(self.label_facturacion,
+            columns=('#0','#1','#2',), height=16
+        )
+        self.detalle_factura.place(x=10, y=190)
+        self.detalle_factura.column('#0', width = 180)
+        self.detalle_factura.column('#1', width = 80)
+        self.detalle_factura.column('#2', width = 100)
+        self.detalle_factura.column('#3', width = 100)
+        
+
+        self.detalle_factura.heading('#0', text='Producto')
+        self.detalle_factura.heading('#1', text='Cantidad')
+        self.detalle_factura.heading('#2', text='P. Unit')
+        self.detalle_factura.heading('#3',text='Subtotal')
+
+        self.lb_detalle = Label(self.label_facturacion, text='Detalle de factura')
+        self.lb_detalle.place(x=150, y=160)
+
+        self.lb_total = Label(self.label_facturacion, text='TOTAL :')
+        self.lb_total.place(x=230, y=550)
+        self.tx_total = Entry(self.label_facturacion, state='readonly')
+        self.tx_total.place(x=300, y=550)
+
+        self.lb_pago = Label(self.label_facturacion, text='PAGO :')
+        self.txt_pago = Entry(self.label_facturacion, )
+        self.lb_pago.place(x=230, y=580)
+        self.txt_pago.place(x=300, y=580)
+
+        self.lb_cambio = Label(self.label_facturacion, text='Cambio')
+        self.tx_cambio = Entry(self.label_facturacion, state='readonly')
+        self.lb_cambio.place(x=230, y=610)
+        self.tx_cambio.place(x=300, y=610)
+
+        self.lb_moneda = Label(self.label_facturacion, text='Moneda :')
+        self.lb_moneda.place(x=10, y=550)
+        self.tipo_moneda = Combobox(self.label_facturacion, values=['$-USD', 'CORD-NIO '], width=10)
+        self.tipo_moneda.place(x=80, y=550)
+
+        imagen_facturar = PhotoImage(file='imagenes/comprobar.png')
+        self.BtnFacturar = Button(self.label_facturacion, text='FACTURAR ', image=imagen_facturar, compound=LEFT)
+        self.BtnFacturar.image = imagen_facturar
+        self.BtnFacturar.place(x=10, y=590)
+       
+
 
     def crear_o_editar_producto(self, op):
         producto = Producto()

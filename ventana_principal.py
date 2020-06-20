@@ -95,6 +95,7 @@ class Ventana_Principal():
         self.listdetalle.heading('#3', text = 'Stock')
         
         self.listdetalle.place(x = 3, y = 20)
+        self.listdetalle.bind('<<TreeviewSelect>>', self.widget_agregar_producto_factura)
         
     def menu_inferior(self):
         self.label_inferior = LabelFrame(self.master, text='Opciones de facturacion',
@@ -263,7 +264,15 @@ class Ventana_Principal():
         self.BtnFacturar.image = imagen_facturar
         self.BtnFacturar.place(x=10, y=590)
        
+    def agregar_producto_factura(self):
+        pass
 
+    def widget_agregar_producto_factura(self, event):
+        self.producto_factura = Toplevel()
+        self.producto_factura.geometry('500x300')
+       
+        self.producto_factura.transient(master=self.master)
+        self.producto_factura.grab_set()
 
     def crear_o_editar_producto(self, op):
         producto = Producto()

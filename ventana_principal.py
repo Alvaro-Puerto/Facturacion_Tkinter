@@ -130,7 +130,6 @@ class Ventana_Principal():
         self.BtnBloquear.place(x=200, y=2)
         self.BtnCancelar.place(x=430, y=2)
 
-
     def widget_buscar(self):
         self.VtBuscar = Toplevel()
         self.VtBuscar.geometry('270x200')
@@ -268,11 +267,58 @@ class Ventana_Principal():
         pass
 
     def widget_agregar_producto_factura(self, event):
+
+        id = self.listdetalle.focus()
+        producto_focus = self.listdetalle.item(id)
+        lista = []
+        for atributos in producto_focus['values']:
+            lista.append(atributos)
+            
+
         self.producto_factura = Toplevel()
-        self.producto_factura.geometry('500x300')
-       
-        self.producto_factura.transient(master=self.master)
+        self.producto_factura.geometry('350x300')
+        self.producto_factura.wait_visibility()
         self.producto_factura.grab_set()
+        self.producto_factura.transient(master=self.master)
+        
+        self.lb_cod_producto =  Label(self.producto_factura, text='Codigo producto   : ')
+        self.lb_cod_producto.place(x=20, y=30)
+
+        codigo = StringVar()
+        self.tx_codigo = Entry(self.producto_factura, state='readonly', textvariable=codigo).place(x=150, y=20)
+        codigo.set(producto_focus['text'])
+        
+       
+        self.lb_nb_producto = Label(self.producto_factura, text='Nombre producto : ',)
+        self.lb_nb_producto.place(x=20, y=70)
+
+        
+        nombre = StringVar()
+        self.txt_nb_producto = Entry(self.producto_factura, state='readonly', textvariable=nombre).place(x=150, y=70)
+        nombre.set(lista[0])
+        
+        self.lb_precio = Label(self.producto_factura, text='Precio producto    : ')
+        self.lb_precio.place(x=20, y=110)
+
+        precio = StringVar()
+        
+        self.txt_precio = Entry(self.producto_factura, state='readonly', textvariable=precio).place(x=150, y=110)
+        precio.set(lista[1])
+
+        self.lb_cantidad = Label(self.producto_factura, text='Cantidad          :')
+        self.lb_cantidad.place(x=20, y=150) 
+        self.txt_cantidad = Entry(self.producto_factura)
+        self.txt_cantidad.place(x=150, y=150)
+
+        self.lb_sub_total = Label(self.producto_factura, text='Sub-total        : ')
+        self.lb_sub_total.place(x=20, y=190)
+
+        self.txt_sub_total = Entry(self.producto_factura, state='readonly', )
+        self.txt_sub_total.place(x=150, y=190)
+
+
+        self.btAdd = Button(self.producto_factura, text='Añadir a la factura')
+        self.btAdd.place(x=120, y=240)
 
     def crear_o_editar_producto(self, op):
         producto = Producto()

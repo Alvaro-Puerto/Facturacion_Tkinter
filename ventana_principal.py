@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter.ttk import Treeview, Combobox
 
 
-from modelos import Producto, ProductoFacturar
+from modelos import Producto, ProductoFacturar, Factura
 from funciones_auxiliares import solo_numero, conexion_consulta
 
 
@@ -18,6 +18,8 @@ class Ventana_Principal():
         self.menu_inferior()
         self.listar_productos()
         self.widget_facturacion()
+
+        self.factura = Factura()
 
         self.validatecommand = self.master.register(solo_numero)
 
@@ -98,8 +100,7 @@ class Ventana_Principal():
         self.listdetalle.heading('#3', text = 'Stock')
         
         self.listdetalle.place(x = 3, y = 20)
-        
-        
+             
     def menu_inferior(self):
         self.label_inferior = LabelFrame(self.master, text='Opciones de facturacion',
             width=800, height=110
@@ -200,6 +201,7 @@ class Ventana_Principal():
         self.BtnGuardar.place(x=110, y=360)
 
     def widget_facturacion(self):
+
         self.label_facturacion = LabelFrame(self.master, text='Facturacion', width=480, height=687)
         self.label_facturacion.place(x=810, y=1)
 
@@ -273,11 +275,17 @@ class Ventana_Principal():
         producto_factura.nombre = self.nombre.get()
         producto_factura.precio_venta = float(self.precio.get())
         producto_factura.cantidad = int(self.txt_cantidad.get())
-        sub_total = str(producto_factura.calcular_subtotal())
+        producto_factura.sub_total = str(producto_factura.calcular_subtotal())
+
+        self.detalle_factura.insert('', 0, text = producto_factura.nombre, values=(
+            producto_factura.precio_venta, producto_factura.cantidad, producto_factura.sub_total)
+                                    )
 
 
-        
-        
+        self.producto_factura.destroy()
+        self.factura.lista_productos.append(producto_factura)
+        self.factura.calcular_total()
+
     def mostrar_sub_total(self, event):
         sub_total = float(self.precio.get()) *  int(self.txt_cantidad.get())
 
@@ -429,7 +437,8 @@ class Ventana_Principal():
                                      )
         self.listdetalle.bind('<Double-1>', self.widget_agregar_producto_factura)
 
-        
+    def nueva_factura(self):
+        pass    
 
         
         

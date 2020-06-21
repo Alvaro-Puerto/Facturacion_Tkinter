@@ -64,11 +64,19 @@ class ProductoFacturar(Producto):
         super(Producto, self).__init__(*args, **kwargs)
 
         self.cantidad = 0
+        self.sub_total = 0
 
 
     def calcular_subtotal(self):
         return self.precio_venta * self.cantidad
-
+    
+    def convertir_dic(self):
+        return {'codigo':self.id, 
+                'nombre':self.nombre,
+                'precio_venta':self.precio_venta,
+                'cantidad':self.cantidad,
+                'sub-total':self.sub_total
+                }
 
 
 class Factura():
@@ -87,7 +95,10 @@ class Factura():
     
     def calcular_total(self):
         total = 0
+        for sub_total in self.lista_productos:
+            total = float(sub_total.calcular_subtotal()) + total
         
+        return sub_total
     
     
 

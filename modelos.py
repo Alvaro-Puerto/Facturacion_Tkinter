@@ -93,6 +93,23 @@ class Factura():
         self.cambio = 0
         
     
+
+    def guardar(self):
+        pass
+
+    def editar(self):
+        pass
+
+    def obtener_numero_factura(self):
+        pass 
+
+    def remover_producto(self, nombre):
+        for lista_productos in self.lista_productos:
+            if nombre == lista_productos.nombre:
+                self.lista_productos.remove(lista_productos)
+        return True
+
+
     def calcular_total(self):
         total = 0
         for sub_total in self.lista_productos:

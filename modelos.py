@@ -67,10 +67,28 @@ class ProductoFacturar(Producto):
 
 
     def calcular_subtotal(self):
-        pass
+        return self.precio_venta * self.cantidad
 
 
 
+class Factura():
+    
+    def __init__(self, *args, **kwargs):
+        super(Factura, self).__init__(*args, **kwargs)
+        self.id_factura = ''
+        self.id_cliente = ''
+        self.fecha_creacion = ''
+        self.hora_creacion = ''
+        self.lista_productos = []
+        self.total = 0
+        self.pago = 0
+        self.cambio = 0
+        
+    
+    def calcular_total(self):
+        total = 0
+        
+    
     
 
 

@@ -20,6 +20,7 @@ class Ventana_Principal():
         self.widget_facturacion()
 
         self.factura = Factura()
+        self.nueva_factura()
 
         self.validatecommand = self.master.register(solo_numero)
 
@@ -114,9 +115,8 @@ class Ventana_Principal():
         }
 
         self.BtnNuevo = Button(self.label_inferior,
-            text='Nueva venta', image = images_inferior['new'],  compound=LEFT
-    
-            
+            text='Nueva venta', image = images_inferior['new'],  compound=LEFT,
+            command=self.nueva_factura
         )
         self.BtnNuevo.image=images_inferior['new']
 
@@ -212,7 +212,8 @@ class Ventana_Principal():
         )
         self.lb_cod_factura.place(x=10, y=60)
 
-        self.txt_cod_factura = Entry(self.label_facturacion, state='readonly')
+        self.codigo_factura = StringVar()
+        self.txt_cod_factura = Entry(self.label_facturacion, state='readonly', textvariable=self.codigo_factura)
         self.txt_cod_factura.place(x=10, y=80)
 
         self.lb_num_venta = Label(self.label_facturacion, text='# Venta :')
@@ -251,14 +252,18 @@ class Ventana_Principal():
         self.tx_total.place(x=300, y=550)
 
         self.lb_pago = Label(self.label_facturacion, text='PAGO :')
-        self.txt_pago = Entry(self.label_facturacion, )
+        self.txt_pago = Entry(self.label_facturacion,
+         #validate='key', validatecommand=(self.validatecommand, "%S")
+         )
         self.lb_pago.place(x=230, y=580)
         self.txt_pago.place(x=300, y=580)
 
+        self.cambio = StringVar()
         self.lb_cambio = Label(self.label_facturacion, text='Cambio')
-        self.tx_cambio = Entry(self.label_facturacion, state='readonly')
+        self.tx_cambio = Entry(self.label_facturacion, state='readonly', textvariable=self.cambio)
         self.lb_cambio.place(x=230, y=610)
         self.tx_cambio.place(x=300, y=610)
+        self.txt_pago.bind('<Return>',self.calcular_cambio)
 
         self.lb_moneda = Label(self.label_facturacion, text='Moneda :')
         self.lb_moneda.place(x=10, y=550)
@@ -304,13 +309,11 @@ class Ventana_Principal():
         
         self.total.set(str(self.factura.calcular_total()))
         
-
     def mostrar_sub_total(self, event):
         sub_total = float(self.precio.get()) *  int(self.txt_cantidad.get())
 
         self.sub_total.set(str(sub_total))
        
-     
     def widget_agregar_producto_factura(self, event):
 
         id = self.listdetalle.focus()
@@ -354,7 +357,9 @@ class Ventana_Principal():
         self.lb_cantidad.place(x=20, y=150) 
         self.cantidad = StringVar()
         self.cantidad.set('1')
-        self.txt_cantidad = Entry(self.producto_factura, textvariable=self.cantidad,)
+        self.txt_cantidad = Entry(self.producto_factura, textvariable=self.cantidad,
+            validate='key', validatecommand=(self.validatecommand, "%S")
+        )
         self.txt_cantidad.bind('<Return>', self.mostrar_sub_total)
        
         self.txt_cantidad.place(x=150, y=150)
@@ -457,7 +462,24 @@ class Ventana_Principal():
         self.listdetalle.bind('<Double-1>', self.widget_agregar_producto_factura)
 
     def nueva_factura(self):
-        pass    
+        #Limpiar productos en facturas 
+
+        id_detalle = self.detalle_factura.get_children()
+        for item in id_detalle:
+            self.detalle_factura.delete(item)
+
+        self.total.set('')
+        self.tipo_moneda.current(1)
+        self.cambio.set('')
+        self.txt_pago.insert(END, '')
+
+        nuevo_codigo_fact = self.factura.obtener_numero_factura()
+        self.codigo_factura.set(nuevo_codigo_fact)
+
+        lista_clientes = self.obtener_clientes()
+
+        for clientes in lista_clientes:
+            self.cliente['values'] = str(clientes[0]) + '--' + str(clientes[1])
 
     def validar_producto_existente_factura(self, nombre):
         lista_producto = self.detalle_factura.get_children()
@@ -469,8 +491,16 @@ class Ventana_Principal():
             else:
                 return False
 
-        
-        
+    def calcular_cambio(self, event):
+        billete = float(self.txt_pago.get())
+        cambio =   billete - float(self.total.get())
+        self.cambio.set(str(cambio))
+
+    def obtener_clientes(self):
+        consulta = 'SELECT * FROM Cliente '
+        lista_clientes = conexion_consulta(consulta,parametros=())
+        print('lista')
+        return lista_clientes
             
         
 

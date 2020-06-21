@@ -282,24 +282,26 @@ class Ventana_Principal():
         id = self.validar_producto_existente_factura(producto_factura.nombre)
 
         if id:
-
+            self.factura.remover_producto(producto_factura.nombre)
             producto_facturar_edit = self.detalle_factura.item(id)
             producto_viejo_valores = producto_facturar_edit['values']
-            producto_factura_cant_ant = producto_viejo_valores[2]
-            nueva_cantidad = producto_factura.cantidad + int(producto_factura_cant_ant)
+            producto_factura_cant_ant = int(producto_viejo_valores[0])
+            self.detalle_factura.delete(id)
+            nueva_cantidad = int(producto_factura.cantidad) + int(producto_factura_cant_ant)
             producto_factura.cantidad = nueva_cantidad
+            producto_factura.sub_total = str(producto_factura.calcular_subtotal())
+            self.detalle_factura.insert('', 0, text = producto_factura.nombre, values=(
+                producto_factura.cantidad,producto_factura.precio_venta, producto_factura.sub_total), iid=id)
             
-            
-
         else:
-
-             self.detalle_factura.insert('', 0, text = producto_factura.nombre, values=(
-                producto_factura.precio_venta, producto_factura.cantidad, producto_factura.sub_total)
+            self.detalle_factura.insert('', 0, text = producto_factura.nombre, values=(
+                producto_factura.cantidad,producto_factura.precio_venta, producto_factura.sub_total)
                                          )
+        self.factura.lista_productos.append(producto_factura)
 
         self.producto_factura.destroy()
 
-        self.factura.lista_productos.append(producto_factura)
+        
         self.total.set(str(self.factura.calcular_total()))
         
 
@@ -459,8 +461,8 @@ class Ventana_Principal():
 
     def validar_producto_existente_factura(self, nombre):
         lista_producto = self.detalle_factura.get_children()
-
-        for productos in lista_producto:
+        
+        for productos in lista_producto[::-1]:
             producto_agregado = self.detalle_factura.item(productos)
             if nombre == producto_agregado['text']:
                 return productos

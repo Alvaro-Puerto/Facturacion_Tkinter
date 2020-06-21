@@ -101,7 +101,16 @@ class Factura():
         pass
 
     def obtener_numero_factura(self):
-        pass 
+        consulta = 'SELECT id_factura FROM Factura ORDER BY id_factura DESC LIMIT 1'
+        codigo = conexion_consulta(consulta, parametros=())
+
+        for identifacdor in codigo:
+            nuevo_codigo = identifacdor[0]
+        
+        dividiendo_digitos = nuevo_codigo.split("-")
+        nuevo_codigo = int(dividiendo_digitos[1]) + 1
+        
+        return dividiendo_digitos[0] + '-' + str(nuevo_codigo)
 
     def remover_producto(self, nombre):
         for lista_productos in self.lista_productos:

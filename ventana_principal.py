@@ -243,9 +243,11 @@ class Ventana_Principal():
         self.lb_detalle = Label(self.label_facturacion, text='Detalle de factura')
         self.lb_detalle.place(x=150, y=160)
 
+
+        self.total = StringVar()
         self.lb_total = Label(self.label_facturacion, text='TOTAL :')
         self.lb_total.place(x=230, y=550)
-        self.tx_total = Entry(self.label_facturacion, state='readonly')
+        self.tx_total = Entry(self.label_facturacion, state='readonly', textvariable=self.total)
         self.tx_total.place(x=300, y=550)
 
         self.lb_pago = Label(self.label_facturacion, text='PAGO :')
@@ -277,14 +279,29 @@ class Ventana_Principal():
         producto_factura.cantidad = int(self.txt_cantidad.get())
         producto_factura.sub_total = str(producto_factura.calcular_subtotal())
 
-        self.detalle_factura.insert('', 0, text = producto_factura.nombre, values=(
-            producto_factura.precio_venta, producto_factura.cantidad, producto_factura.sub_total)
-                                    )
+        id = self.validar_producto_existente_factura(producto_factura.nombre)
 
+        if id:
+
+            producto_facturar_edit = self.detalle_factura.item(id)
+            producto_viejo_valores = producto_facturar_edit['values']
+            producto_factura_cant_ant = producto_viejo_valores[2]
+            nueva_cantidad = producto_factura.cantidad + int(producto_factura_cant_ant)
+            producto_factura.cantidad = nueva_cantidad
+            
+            
+
+        else:
+
+             self.detalle_factura.insert('', 0, text = producto_factura.nombre, values=(
+                producto_factura.precio_venta, producto_factura.cantidad, producto_factura.sub_total)
+                                         )
 
         self.producto_factura.destroy()
+
         self.factura.lista_productos.append(producto_factura)
-        self.factura.calcular_total()
+        self.total.set(str(self.factura.calcular_total()))
+        
 
     def mostrar_sub_total(self, event):
         sub_total = float(self.precio.get()) *  int(self.txt_cantidad.get())
@@ -439,6 +456,16 @@ class Ventana_Principal():
 
     def nueva_factura(self):
         pass    
+
+    def validar_producto_existente_factura(self, nombre):
+        lista_producto = self.detalle_factura.get_children()
+
+        for productos in lista_producto:
+            producto_agregado = self.detalle_factura.item(productos)
+            if nombre == producto_agregado['text']:
+                return productos
+            else:
+                return False
 
         
         

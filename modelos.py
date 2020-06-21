@@ -98,7 +98,7 @@ class Factura():
         for sub_total in self.lista_productos:
             total = float(sub_total.calcular_subtotal()) + total
         
-        return sub_total
+        return total
     
     
 

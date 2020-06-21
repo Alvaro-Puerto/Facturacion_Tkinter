@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter.ttk import Treeview, Combobox
 
 
-from modelos import Producto
+from modelos import Producto, ProductoFacturar
 from funciones_auxiliares import solo_numero, conexion_consulta
 
 
@@ -20,6 +20,9 @@ class Ventana_Principal():
         self.widget_facturacion()
 
         self.validatecommand = self.master.register(solo_numero)
+
+        self.validate_subtotal = self.master.register(self.mostrar_sub_total)
+    
         
 
     def menu(self):
@@ -95,7 +98,7 @@ class Ventana_Principal():
         self.listdetalle.heading('#3', text = 'Stock')
         
         self.listdetalle.place(x = 3, y = 20)
-        self.listdetalle.bind('<<TreeviewSelect>>', self.widget_agregar_producto_factura)
+        
         
     def menu_inferior(self):
         self.label_inferior = LabelFrame(self.master, text='Opciones de facturacion',
@@ -263,9 +266,24 @@ class Ventana_Principal():
         self.BtnFacturar.image = imagen_facturar
         self.BtnFacturar.place(x=10, y=590)
        
-    def agregar_producto_factura(self):
-        pass
+    def agregar_producto_factura(self,):
+        producto_factura = ProductoFacturar()
 
+        producto_factura.id = self.codigo.get()
+        producto_factura.nombre = self.nombre.get()
+        producto_factura.precio_venta = float(self.precio.get())
+        producto_factura.cantidad = int(self.txt_cantidad.get())
+        sub_total = str(producto_factura.calcular_subtotal())
+
+
+        
+        
+    def mostrar_sub_total(self, event):
+        sub_total = float(self.precio.get()) *  int(self.txt_cantidad.get())
+
+        self.sub_total.set(str(sub_total))
+       
+     
     def widget_agregar_producto_factura(self, event):
 
         id = self.listdetalle.focus()
@@ -284,40 +302,47 @@ class Ventana_Principal():
         self.lb_cod_producto =  Label(self.producto_factura, text='Codigo producto   : ')
         self.lb_cod_producto.place(x=20, y=30)
 
-        codigo = StringVar()
-        self.tx_codigo = Entry(self.producto_factura, state='readonly', textvariable=codigo).place(x=150, y=20)
-        codigo.set(producto_focus['text'])
+        self.codigo = StringVar()
+        self.tx_codigo = Entry(self.producto_factura, state='readonly', textvariable=self.codigo).place(x=150, y=20)
+        self.codigo.set(producto_focus['text'])
         
        
         self.lb_nb_producto = Label(self.producto_factura, text='Nombre producto : ',)
         self.lb_nb_producto.place(x=20, y=70)
 
         
-        nombre = StringVar()
-        self.txt_nb_producto = Entry(self.producto_factura, state='readonly', textvariable=nombre).place(x=150, y=70)
-        nombre.set(lista[0])
+        self.nombre = StringVar()
+        self.txt_nb_producto = Entry(self.producto_factura, state='readonly', textvariable=self.nombre).place(x=150, y=70)
+        self.nombre.set(lista[0])
         
         self.lb_precio = Label(self.producto_factura, text='Precio producto    : ')
         self.lb_precio.place(x=20, y=110)
 
-        precio = StringVar()
+        self.precio = StringVar()
         
-        self.txt_precio = Entry(self.producto_factura, state='readonly', textvariable=precio).place(x=150, y=110)
-        precio.set(lista[1])
+        self.txt_precio = Entry(self.producto_factura, state='readonly', textvariable=self.precio).place(x=150, y=110)
+        self.precio.set(lista[1])
 
         self.lb_cantidad = Label(self.producto_factura, text='Cantidad          :')
         self.lb_cantidad.place(x=20, y=150) 
-        self.txt_cantidad = Entry(self.producto_factura)
+        self.cantidad = StringVar()
+        self.cantidad.set('1')
+        self.txt_cantidad = Entry(self.producto_factura, textvariable=self.cantidad,)
+        self.txt_cantidad.bind('<Return>', self.mostrar_sub_total)
+       
         self.txt_cantidad.place(x=150, y=150)
 
         self.lb_sub_total = Label(self.producto_factura, text='Sub-total        : ')
         self.lb_sub_total.place(x=20, y=190)
 
-        self.txt_sub_total = Entry(self.producto_factura, state='readonly', )
+        self.sub_total = StringVar()
+        self.txt_sub_total = Entry(self.producto_factura, state='readonly', textvariable=self.sub_total,
+          
+        )
         self.txt_sub_total.place(x=150, y=190)
 
 
-        self.btAdd = Button(self.producto_factura, text='Añadir a la factura')
+        self.btAdd = Button(self.producto_factura, text='Añadir a la factura', command=(self.agregar_producto_factura))
         self.btAdd.place(x=120, y=240)
 
     def crear_o_editar_producto(self, op):
@@ -397,11 +422,12 @@ class Ventana_Principal():
             self.listdetalle.delete(items)
 
         for element in p:
-             self.listdetalle.insert('', 0, text = element[0], values = (element[1],
+            self.listdetalle.insert('', 0, text = element[0], values = (element[1],
                                                                          element[3],
                                                                          element[4],
                                                                         )
                                      )
+        self.listdetalle.bind('<Double-1>', self.widget_agregar_producto_factura)
 
         
 

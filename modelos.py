@@ -39,9 +39,6 @@ class Producto():
         parametros = [self.estado, self.id]
         return conexion_consulta(consulta, parametros)
 
-    def eliminar(self):
-        pass
-
     def validar(self): # Metodo que valida que los inputs no ingrese valores nulos
         atributos = self.__dict__.items()
         centinela = True
@@ -54,10 +51,6 @@ class Producto():
                 centinela = True
 
         return centinela
-
-    def inventario_agotado(self):
-        pass
-
 
 
 class ProductoFacturar(Producto):
@@ -84,6 +77,19 @@ class ProductoFacturar(Producto):
         consulta = 'INSERT INTO detallefact VALUES(?, ?, ?, ?, ?)'
         parametros=[self.id_factura, self.id, self.precio_venta, self.cantidad, self.sub_total]
         conexion_consulta(consulta, parametros)
+        self.reducir_existencia()
+
+    def reducir_existencia(self):
+        producto_reducir = self.seleccionar()
+        for producto_reducido in producto_reducir:
+            stock = int(producto_reducido[4])
+        
+        nuevo_stock = stock-self.cantidad
+
+        consulta = 'UPDATE producto set inventario=? WHERE id=?'
+        parametros = [nuevo_stock, self.id]
+        conexion_consulta(consulta, parametros)
+
 
 
 class Factura():
@@ -109,9 +115,7 @@ class Factura():
             self.hora_creacion, self.total, self.pago, self.cambio
         ]
         conexion_consulta(consulta, parametros)
-    def editar(self):
-        pass
-
+    
     def obtener_numero_factura(self):
         consulta = 'SELECT id_factura FROM Factura ORDER BY id_factura DESC LIMIT 1'
         codigo = conexion_consulta(consulta, parametros=())

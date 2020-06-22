@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter.ttk import Treeview, Combobox
-
+from datetime import datetime
 
 from modelos import Producto, ProductoFacturar, Factura
 from funciones_auxiliares import solo_numero, conexion_consulta
@@ -271,13 +271,15 @@ class Ventana_Principal():
         self.tipo_moneda.place(x=80, y=550)
 
         imagen_facturar = PhotoImage(file='imagenes/comprobar.png')
-        self.BtnFacturar = Button(self.label_facturacion, text='FACTURAR ', image=imagen_facturar, compound=LEFT)
+        self.BtnFacturar = Button(self.label_facturacion, text='FACTURAR ', image=imagen_facturar, compound=LEFT,
+            width=180, height=50, command=self.guardar_factura
+        )
         self.BtnFacturar.image = imagen_facturar
         self.BtnFacturar.place(x=10, y=590)
        
     def agregar_producto_factura(self,):
         producto_factura = ProductoFacturar()
-
+        producto_factura.id_factura = self.codigo_factura.get()
         producto_factura.id = self.codigo.get()
         producto_factura.nombre = self.nombre.get()
         producto_factura.precio_venta = float(self.precio.get())
@@ -471,7 +473,7 @@ class Ventana_Principal():
         self.total.set('')
         self.tipo_moneda.current(1)
         self.cambio.set('')
-        self.txt_pago.insert(END, '')
+        self.txt_pago.delete(0, END)
 
         nuevo_codigo_fact = self.factura.obtener_numero_factura()
         self.codigo_factura.set(nuevo_codigo_fact)
@@ -479,7 +481,9 @@ class Ventana_Principal():
         lista_clientes = self.obtener_clientes()
 
         for clientes in lista_clientes:
-            self.cliente['values'] = str(clientes[0]) + '--' + str(clientes[1])
+            self.cliente['values'] = str(clientes[0]) + '_' + str(clientes[1])
+        
+        self.cliente.current(0)
 
     def validar_producto_existente_factura(self, nombre):
         lista_producto = self.detalle_factura.get_children()
@@ -497,13 +501,35 @@ class Ventana_Principal():
         self.cambio.set(str(cambio))
 
     def obtener_clientes(self):
-        consulta = 'SELECT * FROM Cliente '
-        lista_clientes = conexion_consulta(consulta,parametros=())
-        print('lista')
-        return lista_clientes
-            
         
+        consulta = 'SELECT * FROM Cliente '
+        return conexion_consulta(consulta,parametros=())
+        
+        
+    def guardar_factura(self):
 
+        if self.txt_pago != '':
+            factura = self.factura
+
+            for productos_factura in self.factura.lista_productos:
+                productos_factura.guardar()
+            
+            factura.id_factura = self.codigo_factura.get()
+            id_cliente = self.cliente.get()
+            lista_cliente = id_cliente.split('_')
+            factura.id_cliente = lista_cliente[0]
+            fecha = datetime.now()
+            factura.fecha_creacion = '{}-{}-{}'.format(fecha.day, fecha.month, fecha.year)
+            factura.hora_creacion = '{}:{}'.format(fecha.hour, fecha.day)
+            factura.pago = self.txt_pago.get()
+            factura.cambio = self.cambio.get()
+
+            factura.guardar()
+            self.nueva_factura()
+        else:
+            pass
+        
+   
 
 
 

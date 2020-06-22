@@ -17,10 +17,10 @@ class Ventana_Principal():
         self.ventana_productos()            #Seccion
         self.menu_inferior()
         self.listar_productos()
-        self.widget_facturacion()
+        #self.widget_facturacion()
 
         self.factura = Factura()
-        self.nueva_factura()
+        #self.nueva_factura()
 
         self.validatecommand = self.master.register(solo_numero)
 
@@ -32,30 +32,64 @@ class Ventana_Principal():
             'nuevo' : PhotoImage(file='imagenes/001-mas.png'),
             'editar' : PhotoImage(file='imagenes/002-lapiz.png'),
             'eliminar' : PhotoImage(file='imagenes/003-eliminar.png'),
-            'reportes' : PhotoImage(file='imagenes/005-navegador.png'),
+            'reportes' : PhotoImage(file='imagenes/004-actualizar.png'),
 
         }
-
-        self.labelframe_superior = LabelFrame(self.master, text='Menu Principal',
+       
+        self.labelframe_superior = LabelFrame(self.master, 
             width='800', height='100'
         )
         self.labelframe_superior.place(x=2, y=0)
 
-        self.Btnproducto = Button(self.labelframe_superior, image=imagenes['nuevo'],text='Nuevo', command=self.widgets_producto)
+        self.label_producto = LabelFrame(self.labelframe_superior, text='Opciones del inventario',
+            width=323, height=90
+        )
+        self.label_producto.place(x=2, y=1)
+
+        self.Btnproducto = Button(self.label_producto, image=imagenes['nuevo'],text='Nuevo', 
+            command=self.widgets_producto, compound=TOP
+        )
         self.Btnproducto.image = imagenes['nuevo']
-        self.Btnproducto.place(x=10, y=5)
+        self.Btnproducto.place(x=5, y=5)
 
-        self.Btneditar = Button(self.labelframe_superior, image=imagenes['editar'], command=self.widget_buscar)
+        self.Btneditar = Button(self.label_producto, image=imagenes['editar'], 
+            command=self.widget_buscar, text='Editar', compound=TOP
+        )
         self.Btneditar.image = imagenes['editar']
-        self.Btneditar.place(x=90, y=5)
+        self.Btneditar.place(x=74, y=5)
 
-        self.Btninactivar = Button(self.labelframe_superior, image=imagenes['eliminar'], command=self.inactivar_producto)
+        self.Btninactivar = Button(self.label_producto, image=imagenes['eliminar'],
+            command=self.inactivar_producto, text='Inactivar', compound=TOP
+        )
         self.Btninactivar.image = imagenes['eliminar']
-        self.Btninactivar.place(x=170, y=5)
+        self.Btninactivar.place(x=139, y=5)
 
-        self.BtnReportes = Button(self.labelframe_superior, image=imagenes['reportes'], command=self.listar_productos)
+        self.BtnReportes = Button(self.label_producto, image=imagenes['reportes'],
+            command=self.listar_productos, text='Refrescar', compound=TOP
+        )
         self.BtnReportes.image = imagenes['reportes']
-        self.BtnReportes.place(x=250, y=5)
+        self.BtnReportes.place(x=223, y=5)
+
+        self.label_conf_reporte = LabelFrame(self.labelframe_superior, text='Configuracion',
+            width=128, height=90
+        )
+        self.label_conf_reporte.place(x=327, y=1)
+
+        images_config = {
+            'config' : PhotoImage(file='imagenes/002-configuraciones.png'),
+        }
+
+        self.btn_config = Button(self.label_conf_reporte, text='Configuracion',
+            image=images_config['config'], compound=TOP, height=45
+        )
+        self.btn_config.image = images_config['config']
+        self.btn_config.place(x=2, y=5)
+
+        self.label_reportes = LabelFrame(self.labelframe_superior, text='Reportes',
+            width=200,  height=90
+        )
+        self.label_reportes.place(x=457, y=1)
+
 
         fecha = datetime.now()
         fecha_conv = '{} - {} - {}'.format(fecha.day, fecha.month, fecha.year)
@@ -135,7 +169,7 @@ class Ventana_Principal():
         )
         self.BtnCancelar.image = images_inferior['cancelar']
         self.BtnBloquear = Button(self.label_inferior, text='Bloquear sistema',
-            image=images_inferior['block'], compound=LEFT
+            image=images_inferior['block'], compound=LEFT, command=self.bloquear
         )
         self.BtnBloquear.images = images_inferior['block']
         
@@ -262,7 +296,7 @@ class Ventana_Principal():
 
         self.lb_pago = Label(self.label_facturacion, text='PAGO :')
         self.txt_pago = Entry(self.label_facturacion,
-         #validate='key', validatecommand=(self.validatecommand, "%S")
+           validate='key', validatecommand=(self.validatecommand, "%S")
          )
         self.lb_pago.place(x=230, y=580)
         self.txt_pago.place(x=300, y=580)
@@ -474,7 +508,8 @@ class Ventana_Principal():
 
     def nueva_factura(self):
         #Limpiar productos en facturas 
-
+        self.widget_facturacion()
+        self.master.geometry('1300x700')
         id_detalle = self.detalle_factura.get_children()
         for item in id_detalle:
             self.detalle_factura.delete(item)
@@ -538,7 +573,9 @@ class Ventana_Principal():
         else:
             pass
         
-   
+    def bloquear(self):
+        self.label_facturacion.place_forget()
+        self.master.geometry('810x700')
 
 
 

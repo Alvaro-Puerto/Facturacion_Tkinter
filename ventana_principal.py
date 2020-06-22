@@ -27,7 +27,6 @@ class Ventana_Principal():
         self.validate_subtotal = self.master.register(self.mostrar_sub_total)
     
         
-
     def menu(self):
         imagenes = {
             'nuevo' : PhotoImage(file='imagenes/001-mas.png'),
@@ -58,16 +57,26 @@ class Ventana_Principal():
         self.BtnReportes.image = imagenes['reportes']
         self.BtnReportes.place(x=250, y=5)
 
+        fecha = datetime.now()
+        fecha_conv = '{} - {} - {}'.format(fecha.day, fecha.month, fecha.year)
+
+        self.lb_fecha = Label(self.labelframe_superior ,text='FECHA :')
+        self.lb_fecha.place(x=640, y=5)
+
+        self.lb_fecha_actual = Label(self.labelframe_superior, text= fecha_conv)
+        self.lb_fecha_actual.place(x=700, y=5)
+
     def buscar(self):
         self.labelframe_buscador =LabelFrame(self.master, width=800, height=50)
         self.txtBuscar = Entry(self.labelframe_buscador, width=80)
-        self.btnBuscar = Button(self.labelframe_buscador, text='Buscar', command=self.buscar_productos)
+        self.txtBuscar.bind('<Return>', self.buscar_productos)
+        self.btnBuscar = Button(self.labelframe_buscador, text='Buscar', command=lambda: self.buscar_productos(1))
 
         self.labelframe_buscador.place(x=2, y=110)
         self.txtBuscar.place(x=5, y=10)
         self.btnBuscar.place(x=670, y=7)
 
-    def buscar_productos(self):
+    def buscar_productos(self, event):
         
         varia = str(self.txtBuscar.get())
         consulta = "SELECT * FROM producto WHERE nombre LIKE '%' || ? ||'%'"
@@ -444,7 +453,7 @@ class Ventana_Principal():
             self.listar_productos()
 
     def listar_productos(self):
-        consulta = 'SELECT * FROM producto WHERE estado=1'
+        consulta = 'SELECT * FROM producto WHERE estado=1 AND inventario >0'
         productos_qs = conexion_consulta(consulta, parametros=())
         p = productos_qs
         self.llenar_registros(p)
@@ -505,7 +514,6 @@ class Ventana_Principal():
         consulta = 'SELECT * FROM Cliente '
         return conexion_consulta(consulta,parametros=())
         
-        
     def guardar_factura(self):
 
         if self.txt_pago != '':
@@ -526,6 +534,7 @@ class Ventana_Principal():
 
             factura.guardar()
             self.nueva_factura()
+            self.listar_productos()
         else:
             pass
         

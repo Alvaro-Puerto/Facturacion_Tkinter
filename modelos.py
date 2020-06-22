@@ -55,6 +55,8 @@ class Producto():
 
         return centinela
 
+    def inventario_agotado(self):
+        pass
 
 
 
@@ -62,7 +64,7 @@ class ProductoFacturar(Producto):
     
     def __init__(self, *args, **kwargs):
         super(Producto, self).__init__(*args, **kwargs)
-
+        self.id_factura = ''
         self.cantidad = 0
         self.sub_total = 0
 
@@ -77,12 +79,18 @@ class ProductoFacturar(Producto):
                 'cantidad':self.cantidad,
                 'sub-total':self.sub_total
                 }
+    
+    def guardar(self):
+        consulta = 'INSERT INTO detallefact VALUES(?, ?, ?, ?, ?)'
+        parametros=[self.id_factura, self.id, self.precio_venta, self.cantidad, self.sub_total]
+        conexion_consulta(consulta, parametros)
 
 
 class Factura():
     
     def __init__(self, *args, **kwargs):
         super(Factura, self).__init__(*args, **kwargs)
+
         self.id_factura = ''
         self.id_cliente = ''
         self.fecha_creacion = ''
@@ -95,8 +103,12 @@ class Factura():
     
 
     def guardar(self):
-        pass
-
+        consulta = 'INSERT INTO Factura VALUES(?, ?, ?, ?, ?, ?, ?)'
+        parametros=[
+            self.id_factura, self.id_cliente, self.fecha_creacion,
+            self.hora_creacion, self.total, self.pago, self.cambio
+        ]
+        conexion_consulta(consulta, parametros)
     def editar(self):
         pass
 
@@ -109,7 +121,7 @@ class Factura():
         
         dividiendo_digitos = nuevo_codigo.split("-")
         nuevo_codigo = int(dividiendo_digitos[1]) + 1
-        
+
         return dividiendo_digitos[0] + '-' + str(nuevo_codigo)
 
     def remover_producto(self, nombre):
@@ -123,7 +135,7 @@ class Factura():
         total = 0
         for sub_total in self.lista_productos:
             total = float(sub_total.calcular_subtotal()) + total
-        
+        self.total = total
         return total
     
     

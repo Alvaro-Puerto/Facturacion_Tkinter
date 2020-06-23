@@ -1,4 +1,11 @@
 from funciones_auxiliares import conexion_consulta
+from reportes import ReciboFactura
+
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter, A4
+from datetime import datetime
+
+import os
 
 class Producto():
   
@@ -92,7 +99,7 @@ class ProductoFacturar(Producto):
 
 
 
-class Factura():
+class Factura(ReciboFactura):
     
     def __init__(self, *args, **kwargs):
         super(Factura, self).__init__(*args, **kwargs)
@@ -141,6 +148,10 @@ class Factura():
             total = float(sub_total.calcular_subtotal()) + total
         self.total = total
         return total
+
+    def crear_recibo(self):
+        recibo = ReciboFactura()
+        recibo.crear_esqueleto()
     
     
 

@@ -18,7 +18,7 @@ class ReciboFactura():
         nombre_pdf = os.path.join('Facturas/',titulo)
 
        
-        self.factura = canvas.Canvas('prueba.pdf', pagesize=A4)
+        self.factura = canvas.Canvas(nombre_pdf, pagesize=A4)
         self.crear_esqueleto()
         #self.dibujar_tabla()
         
@@ -41,16 +41,28 @@ class ReciboFactura():
         self.factura.drawString(220, h - 200, "Detalle de la factura")
         self.factura.line(x1=20, x2=580, y1= h-210, y2= h-210)
 
-        self.dibujar_tabla(h)
-        self.factura.showPage()
-        self.factura.save()
+        
+        
 
-    def dibujar_tabla(self, h):
-        
+    def dibujar_tabla(self, lista_productos):
+        w, h = A4
+        centinela = 0
         data = [[' Codigo', 'Producto', 'Cantidad', 'Precio', 'Subtotal'],
-            
-        
         ]
+        for productos in lista_productos:
+            lista = []
+            lista.append(str(productos.id))
+            lista.append(str(productos.nombre))
+            lista.append(str(productos.cantidad))
+            lista.append(str(productos.precio_venta))
+            lista.append(str(productos.sub_total))
+            data.append(lista)
+            centinela = centinela+20
+   
+        print(lista_productos)
+
+
+
         table = Table(data,colWidths=[100,180, 50, 80, 100],)
         table.setStyle(TableStyle(
             [
@@ -59,7 +71,13 @@ class ReciboFactura():
             ])
         )
         table.wrapOn(self.factura, 100, 100)
-        table.drawOn(self.factura, x=50, y=h-260)
+        table.drawOn(self.factura, x=50, y=h-260-centinela)
 
-   
-ReciboFactura()
+
+    def detalles_factura(self, object):
+        obj_factura = object
+        self.dibujar_tabla(obj_factura.lista_productos)
+
+    def save(self):
+        self.factura.showPage()
+        self.factura.save()

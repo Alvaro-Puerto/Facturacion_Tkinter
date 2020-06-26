@@ -11,15 +11,15 @@ class ReciboFactura():
     
     def __init__(self):
         fecha = datetime.now()
-        titulo = 'Factura-{}-{}:{}:{}--{}:{}.pdf'.format(
+        titulo = 'Factura-{}-{}:{}:{}--{}:{}:{}.pdf'.format(
             'XXX-XXX-XXX', fecha.day, fecha.month, fecha.year,
-            fecha.hour, fecha.minute
+            fecha.hour, fecha.minute, fecha.second
         )
         nombre_pdf = os.path.join('Facturas/',titulo)
 
        
         self.factura = canvas.Canvas(nombre_pdf, pagesize=A4)
-        self.crear_esqueleto()
+        
         #self.dibujar_tabla()
         
     def crear_esqueleto(self):
@@ -29,7 +29,7 @@ class ReciboFactura():
         self.factura.line(x1=20, x2=580, y1= h-70, y2= h-70)
 
         self.factura.drawString(60, h- 100,
-            'Id del cliente : '
+            'Id Factura : '
         )
         self.factura.drawString(420, h- 100,
             'Fecha : '
@@ -59,10 +59,6 @@ class ReciboFactura():
             data.append(lista)
             centinela = centinela+20
    
-        print(lista_productos)
-
-
-
         table = Table(data,colWidths=[100,180, 50, 80, 100],)
         table.setStyle(TableStyle(
             [
@@ -70,14 +66,52 @@ class ReciboFactura():
                 ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
             ])
         )
+
+        punto_separacion = h-260-centinela
         table.wrapOn(self.factura, 100, 100)
         table.drawOn(self.factura, x=50, y=h-260-centinela)
+
+        self.factura.drawString(430, punto_separacion-20,
+            'Total : '
+        )
+        self.factura.drawString(430, punto_separacion-40,
+            'Pago : '
+        )
+        self.factura.drawString(418, punto_separacion-60,
+            'Cambio : '
+        )
+        return punto_separacion
+        
 
 
     def detalles_factura(self, object):
         obj_factura = object
-        self.dibujar_tabla(obj_factura.lista_productos)
+        punto = self.dibujar_tabla(obj_factura.lista_productos)
+        self.crear_esqueleto()
+        self.llenar_factura(obj_factura, punto)
+
+    def llenar_factura(self, object, punto):
+        w, h = A4
+
+        self.factura.drawString(140, h- 100,
+            str(object.id_factura)
+        )
+        self.factura.drawString(180, h- 140,
+            str(object.id_cliente)
+        )
+        self.factura.drawString(480, punto-20,
+            str(object.total)
+        )
+        self.factura.drawString(480, punto-40,
+            str(object.pago)
+        )
+        self.factura.drawString(480, punto-60,
+            str(object.cambio)
+        )
 
     def save(self):
         self.factura.showPage()
         self.factura.save()
+
+    def __del__(self):
+        pass

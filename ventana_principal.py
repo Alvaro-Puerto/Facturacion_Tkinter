@@ -2,9 +2,9 @@ from tkinter import *
 from tkinter.ttk import Treeview, Combobox
 from datetime import datetime
 
-from modelos import Producto, ProductoFacturar, Factura
+from modelos import Producto, ProductoFacturar, Factura, Cliente
 from funciones_auxiliares import solo_numero, conexion_consulta
-
+from reportes import ReciboFactura
 
 class Ventana_Principal():
     
@@ -18,6 +18,7 @@ class Ventana_Principal():
         self.menu_inferior()
         self.listar_productos()
         #self.widget_facturacion()
+        
 
         self.factura = Factura()
         #self.nueva_factura()
@@ -25,8 +26,7 @@ class Ventana_Principal():
         self.validatecommand = self.master.register(solo_numero)
 
         self.validate_subtotal = self.master.register(self.mostrar_sub_total)
-    
-        
+      
     def menu(self):
         imagenes = {
             'nuevo' : PhotoImage(file='imagenes/001-mas.png'),
@@ -80,7 +80,7 @@ class Ventana_Principal():
         }
 
         self.btn_config = Button(self.label_conf_reporte, text='Configuracion',
-            image=images_config['config'], compound=TOP, height=45
+            image=images_config['config'], compound=TOP, height=45, 
         )
         self.btn_config.image = images_config['config']
         self.btn_config.place(x=2, y=5)
@@ -268,6 +268,11 @@ class Ventana_Principal():
         self.lb_cliente.place(x=10, y=110)
         self.cliente = Combobox(self.label_facturacion, state='readonly', width=45)
         self.cliente.place(x=10, y=130)
+
+        self.btn_add_clte = Button(self.label_facturacion, text='Nuevo',
+            command=self.widget_cliente
+        )
+        self.btn_add_clte.place(x=390, y=125)
 
         self.detalle_factura = Treeview(self.label_facturacion,
             columns=('#0','#1','#2',), height=16
@@ -550,7 +555,6 @@ class Ventana_Principal():
         return conexion_consulta(consulta,parametros=())
         
     def guardar_factura(self):
-
         if self.txt_pago != '':
             factura = self.factura
 
@@ -566,19 +570,58 @@ class Ventana_Principal():
             factura.hora_creacion = '{}:{}'.format(fecha.hour, fecha.day)
             factura.pago = self.txt_pago.get()
             factura.cambio = self.cambio.get()
+            recibo = ReciboFactura()
+            recibo.detalles_factura(factura)
+            recibo.save()
+            recibo.__del__()
 
             factura.guardar()
+            factura.lista_productos.clear()
             self.nueva_factura()
             self.listar_productos()
         else:
             pass
+       
+       
+        pass
         
     def bloquear(self):
         self.label_facturacion.place_forget()
         self.master.geometry('810x700')
 
+    def widget_cliente(self):
+        self.ventana = Toplevel()
+        self.ventana.title = 'Nuevo cliente'
+        self.ventana.wait_visibility()
 
+     
+        self.ventana.grab_set()
+        
+        self.ventana.transient(master=self.master)
+        self.ventana.geometry('200x250')
 
+        lbl_codigo = Label(self.ventana, text='Codigo del cliente :').place(x=10, y=10)
+        lbl_nombre = Label(self.ventana, text='Nombre del cliente :').place(x=10, y=50)
+        lbl_direccion = Label(self.ventana, text='Direccion del cliente :').place(x=10, y=90)
+
+        self.txt_codigo = Entry(self.ventana)
+        self.txt_codigo.place(x=10, y=30)
+        self.txt_nombre = Entry(self.ventana)
+        self.txt_nombre.place(x=10, y=70)
+        self.txt_direccion = Entry(self.ventana)
+        self.txt_direccion.place(x=10, y=110)
+
+        self.btn_guardar = Button(self.ventana, text='Guardar', command=self.guardar_cliente).place(x=60, y=150)
+
+    def guardar_cliente(self):
+        cliente = Cliente()
+        cliente.id = self.txt_codigo.get()
+        cliente.nombre = self.txt_nombre.get()
+        cliente.direccion = self.txt_direccion.get()
+
+        cliente.guardar()
+        self.ventana.destroy()
+        self.obtener_clientes()
 
     
     

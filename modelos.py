@@ -141,7 +141,6 @@ class Factura(ReciboFactura):
                 self.lista_productos.remove(lista_productos)
         return True
 
-
     def calcular_total(self):
         total = 0
         for sub_total in self.lista_productos:
@@ -149,10 +148,17 @@ class Factura(ReciboFactura):
         self.total = total
         return total
 
-    def crear_recibo(self):
-        recibo = ReciboFactura()
-        recibo.crear_esqueleto()
-    
+class Cliente():
+
+    def __init__(self, *args, **kwargs):
+        self.id = ''
+        self.nombre = ''
+        self.direccion = ''
+
+    def guardar(self):
+        consulta = 'INSERT INTO Cliente VALUES (?, ?, ?)'
+        parametros = [self.id, self.nombre, self.direccion]
+        conexion_consulta(consulta, parametros)
     
 
 

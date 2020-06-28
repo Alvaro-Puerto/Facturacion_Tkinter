@@ -7,14 +7,15 @@ from funciones_auxiliares import solo_numero, conexion_consulta
 from reportes import ReciboFactura
 
 class Ventana_Principal():
-    
-    
+    '''
+    Contiene todos los widgets necesario para la facturacion 
+    '''
     def __init__(self, master):
 
         self.master = master
         self.widget_menu()                         #Invoca los metodos para 
         self.widget_buscar()                       #crear los widget de cada
-        self.ventana_productos()            #Seccion
+        self.ventana_productos()                   #Seccion
         self.widget_menu_inferior()
         self.listar_productos()
         self.factura = Factura()
@@ -24,6 +25,10 @@ class Ventana_Principal():
         self.validate_subtotal = self.master.register(self.mostrar_sub_total)
       
     def widget_menu(self):
+        ''' 
+         Botones asociados en la barra superior acerca del estado 
+         de los productos 
+        '''
         imagenes = {
             'nuevo' : PhotoImage(file='imagenes/001-mas.png'),
             'editar' : PhotoImage(file='imagenes/002-lapiz.png'),
@@ -76,6 +81,9 @@ class Ventana_Principal():
         self.lb_fecha_actual.place(x=700, y=5)
 
     def widget_buscar(self):
+        ''' 
+         Widgets asociados a la busqueda de un producto 
+        '''
         self.labelframe_buscador =LabelFrame(self.master, width=800, height=50)
         self.txtBuscar = Entry(self.labelframe_buscador, width=80)
         self.txtBuscar.bind('<Return>', self.buscar_productos)
@@ -86,8 +94,12 @@ class Ventana_Principal():
         self.btnBuscar.place(x=670, y=7)
 
     def buscar_productos(self, event):
+        '''
+        Funcion asociada a widget buscar para la busqueda de un
+        producto
+        '''
         varia = str(self.txtBuscar.get())
-        consulta = "SELECT * FROM producto WHERE nombre LIKE '%' || ? ||'%'"
+        consulta = "SELECT * FROM producto WHERE nombre LIKE '%' || ? ||'%'" 
         parametros = [varia]
 
         producto_qs = conexion_consulta(consulta, parametros)
@@ -97,6 +109,10 @@ class Ventana_Principal():
             self.llenar_registros(p)
 
     def ventana_productos(self):
+        ''' 
+         Widget que muestra los productos en general
+         o ya filtrado en una busqueda
+        '''
         self.labelproductos = LabelFrame(self.master, width=800, height=400,
             text='Listado productos'
         )
@@ -120,6 +136,9 @@ class Ventana_Principal():
         self.listdetalle.place(x = 3, y = 20)
              
     def widget_menu_inferior(self):
+        ''' Widget asociado al menu inferior 
+            con funciones de nueva venta y bloquear
+        '''
         self.label_inferior = LabelFrame(self.master, text='Opciones de facturacion',
             width=800, height=110
         )
@@ -152,6 +171,10 @@ class Ventana_Principal():
         self.BtnCancelar.place(x=430, y=2)
 
     def widget_buscar_producto(self):
+        '''
+         Ventana hija para buscar un producto 
+         y actualizarlo
+        '''
         self.VtBuscar = Toplevel()
         self.VtBuscar.geometry('270x200')
         self.VtBuscar.title('Editar u Eliminar')
@@ -168,6 +191,10 @@ class Ventana_Principal():
         self.txtCodigoED.place(x=10, y=50)
 
     def widgets_producto(self):
+        ''' 
+         Ventana hija asociada al boton nuevo que funciona para
+         agregar o modifcar un producto
+        '''
         self.nuevo_producto = Toplevel()
         self.nuevo_producto.title('Nuevo producto')
         self.nuevo_producto.geometry('300x450')
@@ -218,7 +245,11 @@ class Ventana_Principal():
         self.BtnGuardar.place(x=110, y=360)
 
     def widget_facturacion(self):
-
+        ''' 
+         Ventana que asocia todos los controles e informacion
+         acerca de la facturacion de un producto, no disponible cuando
+         inicia, para acceder a ella presionar el boton nueva venta
+        '''
         self.label_facturacion = LabelFrame(self.master, text='Facturacion', width=480, height=687)
         self.label_facturacion.place(x=810, y=1)
 
@@ -300,6 +331,10 @@ class Ventana_Principal():
         self.BtnFacturar.place(x=10, y=590)
        
     def agregar_producto_factura(self,):
+        ''' 
+         Funcion asociada para agregar un producto a la
+         factura 
+        '''
         producto_factura = ProductoFacturar()
         producto_factura.id_factura = self.codigo_factura.get()
         producto_factura.id = self.codigo.get()
@@ -308,8 +343,9 @@ class Ventana_Principal():
         producto_factura.cantidad = int(self.txt_cantidad.get())
         producto_factura.sub_total = str(producto_factura.calcular_subtotal())
 
-        id = self.validar_producto_existente_factura(producto_factura.nombre)
 
+        id = self.validar_producto_existente_factura(producto_factura.nombre)  # Valida si el producto esta 
+                                                                               # existente solo para aumentar su cantidad
         if id:
             self.factura.remover_producto(producto_factura.nombre)
             producto_facturar_edit = self.detalle_factura.item(id)
@@ -334,12 +370,16 @@ class Ventana_Principal():
         self.total.set(str(self.factura.calcular_total()))
         
     def mostrar_sub_total(self, event):
+        #Calcula el subtotal del un producto y lo muestra
         sub_total = float(self.precio.get()) *  int(self.txt_cantidad.get())
-
         self.sub_total.set(str(sub_total))
        
     def widget_agregar_producto_factura(self, event):
-
+        ''' 
+         Ventana hija asociada al momento de selecionar
+         un producto y muestra su informacion y la cantidad 
+         de producto requerida
+        '''
         id = self.listdetalle.focus()
         producto_focus = self.listdetalle.item(id)
         lista = []
@@ -400,6 +440,9 @@ class Ventana_Principal():
         self.btAdd.place(x=120, y=240)
 
     def crear_o_editar_producto(self, op):
+        '''
+        Funcion asociada para crear o actualizar un producto
+        '''
         producto = Producto()
 
         producto.id = self.txtCodigo.get()
@@ -409,12 +452,12 @@ class Ventana_Principal():
         producto.stock = int(self.txtStock.get())
         producto.estado = self.valor.get()
 
-        if producto.validar():
-            if op == 1:
+        if producto.validar(): #Valida si el objeto tiene valores nulos
+            if op == 1: #  Parametro recibido del boton nuevo
                 if producto.guardar():
                     self.listar_productos()
                     self.nuevo_producto.destroy()
-            elif op==2:
+            elif op==2: #Parametro recibido del boton actualizar
                 if producto.actualizar():
                     self.nuevo_producto.destroy()
                     self.listar_productos()
@@ -423,15 +466,17 @@ class Ventana_Principal():
             self.lbError['text'] = 'Datos erroneos'
 
     def actualizar_producto(self):
-        producto = Producto()
-        producto.id = self.txtCodigoED.get()
+        '''Funcion para actualizar un producto '''
 
-        producto_editar = producto.seleccionar()
+        producto = Producto()
+        producto.id = self.txtCodigoED.get() # Recibe el id de producto
+
+        producto_editar = producto.seleccionar() #SQL que devuelve el producto escogido
 
         if producto_editar:
             self.VtBuscar.destroy()
 
-            for producto_edit in producto_editar:
+            for producto_edit in producto_editar: #Llena la ventana con los datos del producto
                 self.widgets_producto()
                 self.nuevo_producto.title('Editar producto')
                 self.txtCodigo.insert(0,producto_edit[0])
@@ -449,6 +494,7 @@ class Ventana_Principal():
                 self.BtnGuardar['command']=lambda: self.crear_o_editar_producto(2)
                 
     def inactivar_producto(self):
+        #Inactiva un producto para que no se liste 
         id = self.listdetalle.focus()
         elementos = self.listdetalle.item(id)
         producto = Producto()
@@ -459,12 +505,15 @@ class Ventana_Principal():
             self.listar_productos()
 
     def listar_productos(self):
+        #Lista todos los productos activos 
+
         consulta = 'SELECT * FROM producto WHERE estado=1 AND inventario >0'
         productos_qs = conexion_consulta(consulta, parametros=())
         p = productos_qs
-        self.llenar_registros(p)
+        self.llenar_registros(p) # Ver linea 514
         
     def llenar_registros(self, p):
+        #Funcion que llena la ventana productos con el sql listar producto 
         registros = self.listdetalle.get_children()
         productos_qs = p
         for items in registros:
@@ -476,7 +525,8 @@ class Ventana_Principal():
                                                                          element[4],
                                                                         )
                                      )
-        self.listdetalle.bind('<Double-1>', self.widget_agregar_producto_factura)
+        self.listdetalle.bind('<Double-1>', self.widget_agregar_producto_factura)#Evento que permite que se abra
+                                                                                 # la ventana para añadir a la factura
 
     def nueva_factura(self):
         #Limpiar productos en facturas 
@@ -498,10 +548,16 @@ class Ventana_Principal():
 
         for clientes in lista_clientes:
             self.cliente['values'] = str(clientes[0]) + '_' + str(clientes[1])
-        
-        self.cliente.current(0)
+        try:
+            self.cliente.current(0)
+        except Exception as e:
+            pass
 
     def validar_producto_existente_factura(self, nombre):
+        ''' 
+        Funcion que verifica si un producto esta añadido a la factura
+        Si el caso es verdadero la cantidad solo se actualiza
+        '''
         lista_producto = self.detalle_factura.get_children()
         
         for productos in lista_producto[::-1]:
@@ -512,17 +568,19 @@ class Ventana_Principal():
                 return False
 
     def calcular_cambio(self, event):
+        #Calcula el cambio 
         billete = float(self.txt_pago.get())
         cambio =   billete - float(self.total.get())
         self.cambio.set(str(cambio))
 
     def obtener_clientes(self):
-        
+        #Lista todos los cliente y lo muestra en el combobox de factura
         consulta = 'SELECT * FROM Cliente '
         return conexion_consulta(consulta,parametros=())
         
     def guardar_factura(self):
-        if self.txt_pago != '':
+        '''Guarda el registro de la factura'''
+        if self.txt_pago != '': # Si el pago no esta vacio
             factura = self.factura
 
             for productos_factura in self.factura.lista_productos:
@@ -537,9 +595,10 @@ class Ventana_Principal():
             factura.hora_creacion = '{}:{}'.format(fecha.hour, fecha.day)
             factura.pago = self.txt_pago.get()
             factura.cambio = self.cambio.get()
-            recibo = ReciboFactura()
-            recibo.detalles_factura(factura)
+            recibo = ReciboFactura() # Instancia del recibo factura
+            recibo.detalles_factura(factura) # se pasa el objeto para ser llenado el recibo
             recibo.save()
+
             recibo.__del__()
 
             factura.guardar()
@@ -548,15 +607,14 @@ class Ventana_Principal():
             self.listar_productos()
         else:
             pass
-       
-       
-        pass
-        
+  
     def bloquear(self):
+        #Oculta el panel de factura
         self.label_facturacion.place_forget()
         self.master.geometry('810x700')
 
     def widget_cliente(self):
+        #Añade un nuevo cliente
         self.ventana = Toplevel()
         self.ventana.title = 'Nuevo cliente'
         self.ventana.wait_visibility()
@@ -581,6 +639,7 @@ class Ventana_Principal():
         self.btn_guardar = Button(self.ventana, text='Guardar', command=self.guardar_cliente).place(x=60, y=150)
 
     def guardar_cliente(self):
+        #Guarda un cliente
         cliente = Cliente()
         cliente.id = self.txt_codigo.get()
         cliente.nombre = self.txt_nombre.get()

@@ -8,21 +8,20 @@ import os
 
 
 class ReciboFactura():
+    '''Objeto para crear un recibo asociado a una factura'''
     
     def __init__(self):
+        '''Inicializa el titulo de la factura'''
         fecha = datetime.now()
         titulo = 'Factura-{}-{}:{}:{}--{}:{}:{}.pdf'.format(
             'XXX-XXX-XXX', fecha.day, fecha.month, fecha.year,
             fecha.hour, fecha.minute, fecha.second
         )
         nombre_pdf = os.path.join('Facturas/',titulo)
-
         self.factura = canvas.Canvas(nombre_pdf, pagesize=A4)
         
-        #self.dibujar_tabla()
-        
     def crear_esqueleto(self):
-        w, h = A4
+        _, h = A4
         self.factura
         self.factura.drawString(240, h - 50, "FACTURA")
         self.factura.line(x1=20, x2=580, y1= h-70, y2= h-70)
@@ -44,7 +43,7 @@ class ReciboFactura():
         
 
     def dibujar_tabla(self, lista_productos):
-        w, h = A4
+        _, h = A4
         centinela = 0
         data = [[' Codigo', 'Producto', 'Cantidad', 'Precio', 'Subtotal'],
         ]

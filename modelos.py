@@ -97,8 +97,6 @@ class ProductoFacturar(Producto):
         parametros = [nuevo_stock, self.id]
         conexion_consulta(consulta, parametros)
 
-
-
 class Factura(ReciboFactura):
     
     def __init__(self, *args, **kwargs):

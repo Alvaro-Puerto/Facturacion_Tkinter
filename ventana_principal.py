@@ -12,22 +12,18 @@ class Ventana_Principal():
     def __init__(self, master):
 
         self.master = master
-        self.menu()                         #Invoca los metodos para 
-        self.buscar()                       #crear los widget de cada
+        self.widget_menu()                         #Invoca los metodos para 
+        self.widget_buscar()                       #crear los widget de cada
         self.ventana_productos()            #Seccion
-        self.menu_inferior()
+        self.widget_menu_inferior()
         self.listar_productos()
-        #self.widget_facturacion()
-        
-
         self.factura = Factura()
-        #self.nueva_factura()
-
+       
         self.validatecommand = self.master.register(solo_numero)
 
         self.validate_subtotal = self.master.register(self.mostrar_sub_total)
       
-    def menu(self):
+    def widget_menu(self):
         imagenes = {
             'nuevo' : PhotoImage(file='imagenes/001-mas.png'),
             'editar' : PhotoImage(file='imagenes/002-lapiz.png'),
@@ -53,7 +49,7 @@ class Ventana_Principal():
         self.Btnproducto.place(x=5, y=5)
 
         self.Btneditar = Button(self.label_producto, image=imagenes['editar'], 
-            command=self.widget_buscar, text='Editar', compound=TOP
+            command=self.widget_buscar_producto, text='Editar', compound=TOP
         )
         self.Btneditar.image = imagenes['editar']
         self.Btneditar.place(x=74, y=5)
@@ -70,27 +66,6 @@ class Ventana_Principal():
         self.BtnReportes.image = imagenes['reportes']
         self.BtnReportes.place(x=223, y=5)
 
-        self.label_conf_reporte = LabelFrame(self.labelframe_superior, text='Configuracion',
-            width=128, height=90
-        )
-        self.label_conf_reporte.place(x=327, y=1)
-
-        images_config = {
-            'config' : PhotoImage(file='imagenes/002-configuraciones.png'),
-        }
-
-        self.btn_config = Button(self.label_conf_reporte, text='Configuracion',
-            image=images_config['config'], compound=TOP, height=45, 
-        )
-        self.btn_config.image = images_config['config']
-        self.btn_config.place(x=2, y=5)
-
-        self.label_reportes = LabelFrame(self.labelframe_superior, text='Reportes',
-            width=200,  height=90
-        )
-        self.label_reportes.place(x=457, y=1)
-
-
         fecha = datetime.now()
         fecha_conv = '{} - {} - {}'.format(fecha.day, fecha.month, fecha.year)
 
@@ -100,7 +75,7 @@ class Ventana_Principal():
         self.lb_fecha_actual = Label(self.labelframe_superior, text= fecha_conv)
         self.lb_fecha_actual.place(x=700, y=5)
 
-    def buscar(self):
+    def widget_buscar(self):
         self.labelframe_buscador =LabelFrame(self.master, width=800, height=50)
         self.txtBuscar = Entry(self.labelframe_buscador, width=80)
         self.txtBuscar.bind('<Return>', self.buscar_productos)
@@ -111,7 +86,6 @@ class Ventana_Principal():
         self.btnBuscar.place(x=670, y=7)
 
     def buscar_productos(self, event):
-        
         varia = str(self.txtBuscar.get())
         consulta = "SELECT * FROM producto WHERE nombre LIKE '%' || ? ||'%'"
         parametros = [varia]
@@ -145,7 +119,7 @@ class Ventana_Principal():
         
         self.listdetalle.place(x = 3, y = 20)
              
-    def menu_inferior(self):
+    def widget_menu_inferior(self):
         self.label_inferior = LabelFrame(self.master, text='Opciones de facturacion',
             width=800, height=110
         )
@@ -177,7 +151,7 @@ class Ventana_Principal():
         self.BtnBloquear.place(x=200, y=2)
         self.BtnCancelar.place(x=430, y=2)
 
-    def widget_buscar(self):
+    def widget_buscar_producto(self):
         self.VtBuscar = Toplevel()
         self.VtBuscar.geometry('270x200')
         self.VtBuscar.title('Editar u Eliminar')
@@ -386,11 +360,9 @@ class Ventana_Principal():
         self.tx_codigo = Entry(self.producto_factura, state='readonly', textvariable=self.codigo).place(x=150, y=20)
         self.codigo.set(producto_focus['text'])
         
-       
         self.lb_nb_producto = Label(self.producto_factura, text='Nombre producto : ',)
         self.lb_nb_producto.place(x=20, y=70)
 
-        
         self.nombre = StringVar()
         self.txt_nb_producto = Entry(self.producto_factura, state='readonly', textvariable=self.nombre).place(x=150, y=70)
         self.nombre.set(lista[0])
@@ -443,13 +415,10 @@ class Ventana_Principal():
                     self.listar_productos()
                     self.nuevo_producto.destroy()
             elif op==2:
-                
-                print('OPCION |1')
                 if producto.actualizar():
                     self.nuevo_producto.destroy()
                     self.listar_productos()
 
-            
         else:
             self.lbError['text'] = 'Datos erroneos'
 
@@ -463,7 +432,6 @@ class Ventana_Principal():
             self.VtBuscar.destroy()
 
             for producto_edit in producto_editar:
-
                 self.widgets_producto()
                 self.nuevo_producto.title('Editar producto')
                 self.txtCodigo.insert(0,producto_edit[0])
@@ -481,7 +449,6 @@ class Ventana_Principal():
                 self.BtnGuardar['command']=lambda: self.crear_o_editar_producto(2)
                 
     def inactivar_producto(self):
-
         id = self.listdetalle.focus()
         elementos = self.listdetalle.item(id)
         producto = Producto()
@@ -499,11 +466,11 @@ class Ventana_Principal():
         
     def llenar_registros(self, p):
         registros = self.listdetalle.get_children()
-        p = p
+        productos_qs = p
         for items in registros:
             self.listdetalle.delete(items)
 
-        for element in p:
+        for element in productos_qs:
             self.listdetalle.insert('', 0, text = element[0], values = (element[1],
                                                                          element[3],
                                                                          element[4],

@@ -17,7 +17,6 @@ class ReciboFactura():
         )
         nombre_pdf = os.path.join('Facturas/',titulo)
 
-       
         self.factura = canvas.Canvas(nombre_pdf, pagesize=A4)
         
         #self.dibujar_tabla()
